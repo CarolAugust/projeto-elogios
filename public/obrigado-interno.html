@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Obrigado pelo Elogio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --orange:#ff5805;
+      --orange-2:#ff7a1a;
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --pill:#fff6f1;
+      --pill-border:#ffd7bd;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg); color:var(--text);
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+
+    .wrap{width:100%; max-width:520px}
+    .card{
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,.08);
+      padding:28px 22px;
+      text-align:center;
+    }
+    .emoji{font-size:54px; line-height:1; margin-bottom:10px}
+    h1{margin:0 0 10px; font-size:1.8rem; color:var(--orange); font-weight:700}
+    .sub{margin:0 0 18px; color:var(--muted)}
+    .info{
+      background:var(--pill);
+      border:1px dashed var(--pill-border);
+      color:#7a4b32;
+      border-radius:12px;
+      padding:14px 16px;
+      margin:0 auto 18px;
+      font-size:.95rem;
+    }
+    .actions{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
+    .btn{
+      appearance:none; border:none; cursor:pointer; font-family:inherit; font-weight:600;
+      border-radius:999px; padding:12px 18px; transition:.2s;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--orange-2),var(--orange)); color:#fff}
+    .btn-primary:hover{transform:translateY(-1px)}
+    .btn-ghost{background:#eef2f7; color:#111827}
+    .btn-ghost:hover{background:#e6ebf4}
+    .foot-note{margin-top:14px; color:#9ca3af; font-size:.9rem}
+
+    /* Confete simples */
+    .confetti{position:fixed; inset:0; pointer-events:none; overflow:hidden}
+    .confetti i{
+      position:absolute; width:8px; height:14px; border-radius:2px; opacity:.95;
+      animation:fall 2600ms linear infinite;
+    }
+    @keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+
+    @media (max-width:480px){
+      .card{padding:22px 18px}
+      h1{font-size:1.55rem}
+    }
+  </style>
+</head>
+<body>
+  <!-- confete -->
+  <div class="confetti" aria-hidden="true"></div>
+
+  <main class="wrap" role="status" aria-live="polite">
+    <section class="card">
+      <div class="emoji">🎉</div>
+      <h1>Obrigado pelo seu elogio!</h1>
+      <p class="sub">Recebemos o seu elogio interno com sucesso.</p>
+
+      <div class="info">
+        Ele será analisado e encaminhado ao time responsável. Obrigado por reconhecer
+        quem faz a diferença! 🙌
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="location.href='elogio-interno.html'">
+          Fazer outro elogio
+        </button>
+      </div>
+
+      <p class="foot-note">Você será redirecionado automaticamente em alguns segundos…</p>
+    </section>
+  </main>
+
+  <script>
+    // Confetes leves
+    const colors = ['#ff5805','#ff8a58','#ffd2bf','#3b82f6','#22c55e','#f59e0b'];
+    const container = document.querySelector('.confetti');
+    const COUNT = 48;
+    for (let i=0;i<COUNT;i++){
+      const p = document.createElement('i');
+      const size = 6 + Math.random()*6;
+      p.style.left = (Math.random()*100) + 'vw';
+      p.style.top = (-10 - Math.random()*40) + 'vh';
+      p.style.background = colors[i % colors.length];
+      p.style.width = size + 'px';
+      p.style.height = (size*1.5) + 'px';
+      p.style.animationDelay = (Math.random()*1200) + 'ms';
+      p.style.animationDuration = (2200 + Math.random()*1800) + 'ms';
+      p.style.transform = `rotate(${Math.random()*360}deg)`;
+      container.appendChild(p);
+    }
+
+  

@@ -1,0 +1,231 @@
+# Sistema de Elogios e Ocorrências (Motoristas)
+
+> Registro centralizado de **elogios** e **ocorrências** de motoristas, com API Node.js/Express e banco MariaDB/MySQL. Preparado para dashboards/BI.
+
+<!-- Coloque um print da tela aqui, se quiser -->
+<!-- ![Screenshot](./docs/screenshot.png) -->
+
+---
+
+## Sumário
+- [Visão Geral](#visão-geral)
+- [Funcionalidades](#funcionalidades)
+- [Arquitetura](#arquitetura)
+- [Tecnologias](#tecnologias)
+- [Requisitos](#requisitos)
+- [Instalação](#instalação)
+- [Configuração (.env)](#configuração-env)
+- [Banco de Dados](#banco-de-dados)
+- [Executando em Desenvolvimento](#executando-em-desenvolvimento)
+- [Deploy (Produção) com PM2](#deploy-produção-com-pm2)
+- [API — Endpoints](#api--endpoints)
+- [Segurança](#segurança)
+- [Logs & Monitoramento](#logs--monitoramento)
+- [Backup](#backup)
+- [Solução de Problemas](#solução-de-problemas)
+- [Roadmap](#roadmap)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
+
+---
+
+## Visão Geral
+Este projeto substitui fluxos manuais (ex.: envio via WhatsApp) por uma aplicação com **API REST** e **persistência** em banco, permitindo análises futuras.
+
+**Objetivos**
+- Capturar elogios/ocorrências com dados padronizados.
+- Armazenar em MariaDB/MySQL.
+- Fornecer base para relatórios e dashboards (Power BI, Metabase, Superset).
+
+## Funcionalidades
+- [x] Registrar **elogios** via formulário ou API.
+- [x] Registrar **ocorrências** (ex.: atraso, problema de carga).
+- [x] Armazenar **data/hora (fuso Brasil)**, motorista, placa (opcional), descrição, localização (lat/long opcional).
+- [x] API REST com endpoints separados.
+- [x] Interface simples em HTML/CSS responsivo.
+- [ ] Dashboard resumido.
+- [ ] Exportação CSV/Excel.
+- [ ] Autenticação/Perfis de acesso (futuro).
+
+## Arquitetura
+```
+[Web Form / Client] → [Express API] → [mysql2] → [MariaDB/MySQL]
+                              ↓
+                          [PM2 / Logs]
+```
+
+## Tecnologias
+- **Node.js + Express** (backend e rotas)
+- **MariaDB/MySQL** com `mysql2`
+- **moment-timezone** (TZ: America/Sao_Paulo)
+- **dotenv**, **cors**
+- **PM2** (produção)
+
+## Requisitos
+- Node.js LTS + npm
+- MariaDB/MySQL acessível
+- Windows 10/11 ou Windows Server (para produção neste setup)
+
+## Instalação
+```bash
+# Clonar
+git clone <URL_DO_REPO> projeto-elogios
+cd projeto-elogios
+
+# Dependências
+npm install
+```
+
+## Configuração (.env)
+Crie um arquivo `.env` na raiz:
+```ini
+# App
+PORT=3000
+TZ=America/Sao_Paulo
+ALLOWED_ORIGINS=http://localhost:3000,https://seu-dominio
+
+# DB
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=usuario
+DB_PASS=senha
+DB_NAME=elogios_db
+```
+> Nunca commitar o `.env`. Em produção, use variáveis de ambiente ou `ecosystem.config.js` do PM2.
+
+## Banco de Dados
+Crie a base e a tabela mínima:
+```sql
+CREATE DATABASE IF NOT EXISTS elogios_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE elogios_db;
+
+CREATE TABLE IF NOT EXISTS registros (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  tipo ENUM('elogio','ocorrencia') NOT NULL,
+  motorista VARCHAR(120) NOT NULL,
+  placa VARCHAR(15) NULL,
+  descricao TEXT NULL,
+  latitude DECIMAL(10,7) NULL,
+  longitude DECIMAL(10,7) NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  origem VARCHAR(50) DEFAULT 'web'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_tipo_data ON registros (tipo, criado_em);
+CREATE INDEX idx_motorista ON registros (motorista);
+CREATE INDEX idx_placa ON registros (placa);
+```
+
+## Executando em Desenvolvimento
+```bash
+npm run dev   # se usar nodemon
+# ou
+node server.js
+```
+Acesse: `http://localhost:${PORT}`
+
+## Deploy (Produção) com PM2
+Instale PM2 globalmente e suba o processo:
+```powershell
+npm i -g pm2
+pm2 start "C:\\apps\\projeto-elogios\\server.js" --name projeto-elogios --time
+pm2 save
+```
+
+**ecosystem.config.js (opcional):**
+```js
+module.exports = {
+  apps: [{
+    name: "projeto-elogios",
+    cwd: "C:\\apps\\projeto-elogios",
+    script: "server.js",
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: "500M",
+    env: { NODE_ENV: "production", PORT: "3000", TZ: "America/Sao_Paulo" },
+    out_file: "C:\\logs\\elogios.out.log",
+    error_file: "C:\\logs\\elogios.err.log",
+    log_date_format: "YYYY-MM-DD HH:mm:ss"
+  }]
+}
+```
+> Para auto-start no boot no Windows, use **pm2-installer** ou **pm2-windows-service** e rode `pm2 save`.
+
+## API — Endpoints
+**Healthcheck**
+```http
+GET /health             → 200 { "status": "ok", "time": "..." }
+```
+
+**Criar Elogio**
+```http
+POST /api/elogios
+Content-Type: application/json
+{
+  "motorista": "Fulano",
+  "placa": "ABC1D23",
+  "descricao": "Atendimento excelente",
+  "latitude": -23.55,
+  "longitude": -46.63
+}
+```
+
+**Criar Ocorrência**
+```http
+POST /api/ocorrencias
+Content-Type: application/json
+{
+  "motorista": "Fulano",
+  "placa": "ABC1D23",
+  "descricao": "Atraso na coleta"
+}
+```
+
+**Listar Registros**
+```http
+GET /api/registros?tipo=elogio&placa=ABC1D23&de=2025-01-01&ate=2025-12-31&page=1&limit=50
+```
+
+## Segurança
+- Não commitar segredos (.env).
+- Usuário de DB com permissões mínimas.
+- CORS restrito (`ALLOWED_ORIGINS`).
+- Validar/sanitizar payloads (ex.: `express-validator`).
+- Considerar `helmet` e rate limiting.
+
+## Logs & Monitoramento
+```powershell
+pm2 logs projeto-elogios
+pm2 status
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:max_size 20M
+pm2 set pm2-logrotate:retain 10
+pm2 save
+```
+
+## Backup
+**Banco**
+```powershell
+"C:\\Program Files\\MySQL\\MySQL Server X.Y\\bin\\mysqldump.exe" -h DB_HOST -u DB_USER -pDB_PASS DB_NAME > C:\\backups\\elogios_YYYYMMDD_HHMM.sql
+```
+**Aplicação**: backup da pasta do projeto e dos logs, se necessário.
+
+## Solução de Problemas
+- App não sobe no boot → instalar/configurar serviço do PM2 e `pm2 save`.
+- Projeto em letra de rede (ex.: `O:`) não inicia como serviço → usar caminho local (`C:\\apps...`) ou UNC `\\\\SERVIDOR\\share` e rodar serviço com usuário que tenha acesso.
+- `pm2` não reconhecido → reabra o terminal/VS Code; verifique instalação global no PATH.
+- Porta ocupada → `netstat -ano | findstr :3000`, finalize o PID ou altere `PORT`.
+
+## Roadmap
+- [ ] Autenticação/Perfis
+- [ ] Dashboard com métricas por período
+- [ ] Exportações CSV/Excel
+- [ ] Documentação OpenAPI/Swagger
+
+## Contribuição
+Sinta-se à vontade para abrir issues ou enviar PRs. Padrão de commit sugerido: Conventional Commits.
+
+## Licença
+Defina sua licença (ex.: MIT) em `LICENSE`.
+

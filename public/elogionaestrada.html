@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rota de Oportunidade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Cabeçalho com banner -->
+  <header class="header">
+    <a href="https://pizzattolog.com.br/" target="_blank">
+      <img src="https://d335luupugsy2.cloudfront.net/cms/files/83704/1708422309/$2ghsj3ov03w" 
+           alt="Banner Rota de Oportunidade" class="banner">
+    </a>
+  </header>
+
+  <!-- Conteúdo central -->
+  <main class="container">
+    <div class="card highlight">
+      <h1>
+        Sua colaboração <span class="highlight-text">movimenta o mundo!</span>
+      </h1>
+      <p class="subtitle">Participe com a gente e reconheça quem faz a diferença!</p>
+      <div class="button-group">
+        <!-- Botões adaptados para chamar função de geolocalização -->
+        <button class="btn-orange" onclick="abrirElogio()">
+          <i class="fas fa-smile"></i> Elogie um(a) motorista
+        </button>
+        <button class="btn-orange" onclick="abrirOcorrencia()">
+          <i class="fas fa-exclamation-triangle"></i> Registrar Ocorrência
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <p>Siga a <strong>gente</strong> nas redes sociais!</p>
+    <div class="social-icons">
+      <a href="https://www.facebook.com/pizzattolog" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="https://www.instagram.com/pizzattolog/" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.linkedin.com/search/results/all/?keywords=pizzattolog" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="https://www.youtube.com/c/PIZZATTOLOG" target="_blank"><i class="fab fa-youtube"></i></a>
+    </div>
+    
+    <a href="https://pizzattolog.com.br/esg/#programas-sociais" target="_blank">
+      <button class="btn-orange small">Nossos Programas Sociais</button>
+    </a>
+
+    <div class="links">
+      <a href="https://pizzattolog.com.br/contato/#ouvidoria" target="_blank">Canal de Ouvidoria</a> -
+      <a href="https://pizzattolog.com.br/termos-de-uso/" target="_blank">Termos de Uso</a> -
+      <a href="https://pizzattolog.com.br/contato/#lgpd" target="_blank">LGPD</a> -
+      <a href="https://conteudo.pizzattolog.com.br/politica-rota-de-oportunidades" target="_blank">Política Rota de Oportunidade</a>
+    </div>
+
+    <p>Todos os direitos reservados ©</p>
+
+    <!-- IMAGEM LOGO -->
+    <div class="footer-logo">
+      <img src="logo.png" alt="Logo Pizzattolog" class="footer-img">
+    </div>
+  </footer>
+
+  <!-- ✅ Hand Talk - Recursos Assistivos -->
+  <script src="https://plugin.handtalk.me/web/latest/handtalk.min.js"></script>
+  <script>
+    var ht = new HT({
+      token: "47f0ac7ccfd266d018b3652ae480edb6",
+      avatar: "MAYA"
+    });
+  </script>
+
+  <!-- ✅ Script para capturar localização -->
+  <script>
+    function capturarLocalizacao(callback) {
+      if (navigator.geolocation) {
+        // Exibe alerta antes da solicitação
+        alert('📍 Para continuar, permita o acesso à localização na próxima solicitação.');
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            // Salva no localStorage
+            localStorage.setItem('latitude', lat);
+            localStorage.setItem('longitude', lng);
+
+            console.log('✅ Localização capturada:', lat, lng);
+            callback();
+          },
+          (err) => {
+            alert('⚠ Você negou ou ocorreu um erro ao obter a localização.');
+            console.error('Erro ao obter localização:', err.message);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      } else {
+        alert('Seu navegador não suporta geolocalização.');
+      }
+    }
+
+    function abrirElogio() {
+      capturarLocalizacao(() => {
+        window.location.href = 'elogio.html';
+      });
+    }
+
+    function abrirOcorrencia() {
+      capturarLocalizacao(() => {
+        window.location.href = 'ocorrencia.html';
+      });
+    }
+  </script>
+<script src="/avaliador-token.js"></script>
+
+</body>
+</html>

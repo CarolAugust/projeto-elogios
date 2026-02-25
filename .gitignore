@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+certs/
+*.log
+pm2*.log
+npm-debug.log*
+.DS_Store
+.env.local

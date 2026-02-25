@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elogie um Motorista (Interno)</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* estilos leves para feedback de localização (opcional) */
+    .loc-status {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .75rem; border-radius: .5rem; margin-bottom: 1rem;
+      font-size: .95rem;
+    }
+    .loc-pending { background: #fff7e6; border: 1px solid #ffe2a7; }
+    .loc-ok { background: #e8f7ee; border: 1px solid #b9eccd; }
+    .loc-error { background: #fde8e8; border: 1px solid #f5bcbc; }
+    .muted { opacity: .7; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="card">
+      <h1>😊 Elogie um Motorista (Interno)</h1>
+      <p>Preencha o formulário abaixo para enviar seu elogio interno:</p>
+
+      <!-- Status da localização -->
+      <div id="locStatus" class="loc-status loc-pending">
+        <span id="locIcon">🛰️</span>
+        <span id="locText">Aguardando permissão de localização…</span>
+      </div>
+
+      <form id="elogioInternoForm" class="form" autocomplete="off">
+        <label for="matricula">Matrícula do Motorista:</label>
+        <div class="input-with-hint">
+          <input type="text" id="matricula" inputmode="numeric" required aria-describedby="matricula-hint" />
+          <span id="matricula-hint" class="hint" aria-hidden="true"></span>
+          <div id="autocomplete-list" class="autocomplete-items"></div>
+        </div>
+
+        <label for="autor">Seu Nome:</label>
+        <input type="text" id="autor" required />
+
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" required pattern="^\d{10,11}$" placeholder="DDD + número" inputmode="tel" autocomplete="tel" />
+
+        <label for="elogio">Elogio:</label>
+        <textarea id="elogio" required></textarea>
+
+        <!-- Ocultos (preenchidos pela geolocalização) -->
+        <input type="hidden" id="latitude" />
+        <input type="hidden" id="longitude" />
+        <input type="hidden" id="maps_link" />
+
+        <button type="submit" id="btn-submit" class="btn-orange" disabled>Enviar Elogio Interno</button>
+        <div id="submitHint" class="muted">O botão será habilitado após confirmar sua localização.</div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    let motoristas = [];
+
+    // Referências de elementos
+    const inputMatricula = document.getElementById('matricula');
+    const list = document.getElementById('autocomplete-list');
+    const hint = document.getElementById('matricula-hint');
+
+    const $lat  = document.getElementById('latitude');
+    const $lng  = document.getElementById('longitude');
+    const $maps = document.getElementById('maps_link');
+
+    const $btnSubmit = document.getElementById('btn-submit');
+    const $submitHint = document.getElementById('submitHint');
+    const $locStatus = document.getElementById('locStatus');
+    const $locText = document.getElementById('locText');
+    const $locIcon = document.getElementById('locIcon');
+
+    function setSubmitEnabled(enabled) {
+      $btnSubmit.disabled = !enabled;
+      $submitHint.classList.toggle('hidden', enabled);
+    }
+
+    function setLocStatus(state, msg) {
+      // state: 'pending' | 'ok' | 'error'
+      $locStatus.classList.remove('loc-pending', 'loc-ok', 'loc-error');
+      if (state === 'ok') {
+        $locStatus.classList.add('loc-ok');
+        $locIcon.textContent = '✅';
+      } else if (state === 'error') {
+        $locStatus.classList.add('loc-error');
+        $locIcon.textContent = '⚠️';
+      } else {
+        $locStatus.classList.add('loc-pending');
+        $locIcon.textContent = '🛰️';
+      }
+      $locText.textContent = msg;
+    }
+
+    // ---------- Carrega motoristas ----------
+    fetch('/motoristas-ativos')
+      .then((r) => r.json())
+      .then((data) => {
+        motoristas = Array.isArray(data) ? data : [];
+        // Define maxlength do campo com base no maior tamanho de matrícula
+        const maxLen = Math.max(0, ...motoristas.map(m => String(m.matricula || '').length));
+        if (maxLen > 0) inputMatricula.setAttribute('maxlength', String(maxLen));
+      })
+      .catch(() => (motoristas = []));
+
+    // ---------- Mostrar nome se houver MATCH EXATO ----------
+    inputMatricula.addEventListener('input', () => {
+      // aceita apenas dígitos
+      const onlyDigits = inputMatricula.value.replace(/\D/g, '');
+      if (onlyDigits !== inputMatricula.value) inputMatricula.value = onlyDigits;
+
+      list.innerHTML = '';
+      const val = inputMatricula.value.trim();
+      if (!val) { hint.textContent = ''; return; }
+
+      const match = motoristas.find(m => String(m.matricula) === val);
+      hint.textContent = match ? match.nome_motorista : '';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.input-with-hint')) list.innerHTML = '';
+    });
+
+    // ---------- Geolocalização ----------
+    async function solicitarLocalizacao() {
+      if (!navigator.geolocation) {
+        setLocStatus('error', 'Seu navegador não suporta geolocalização.');
+        setSubmitEnabled(false);
+        return;
+      }
+
+      // Checar permissão quando disponível
+      try {
+        const perm = await (navigator.permissions?.query({ name: 'geolocation' }) || Promise.resolve(null));
+        if (perm && perm.state === 'denied') {
+          setLocStatus('error', 'Permissão de localização negada. Habilite nas configurações do navegador.');
+          setSubmitEnabled(false);
+          return;
+        }
+      } catch (_) {}
+
+      setLocStatus('pending', 'Solicitando sua localização…');
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          $lat.value = latitude;
+          $lng.value = longitude;
+          $maps.value = `https://maps.google.com/?q=${latitude},${longitude}`;
+          setLocStatus('ok', 'Localização confirmada. Você já pode enviar o elogio.');
+          setSubmitEnabled(true);
+        },
+        (err) => {
+          if (err.code === 1) {
+            setLocStatus('error', 'Acesso à localização foi negado. Permita o acesso para continuar.');
+          } else if (err.code === 2) {
+            setLocStatus('error', 'Não foi possível determinar sua posição. Tente novamente.');
+          } else if (err.code === 3) {
+            setLocStatus('error', 'Tempo esgotado ao obter localização. Tente novamente.');
+          } else {
+            setLocStatus('error', 'Não foi possível obter a localização. Verifique as permissões.');
+          }
+          setSubmitEnabled(false);
+          console.warn('Geo erro:', err.message);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+      );
+    }
+
+    // ---------- Envio ----------
+    document.getElementById('elogioInternoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const latitude = $lat.value;
+      const longitude = $lng.value;
+
+      if (!latitude || !longitude) {
+        setLocStatus('error', 'Localização ausente. Clique para permitir a localização e tentar novamente.');
+        setSubmitEnabled(false);
+        return;
+      }
+
+      const data = {
+        matricula: document.getElementById('matricula').value.trim(),
+        autor: document.getElementById('autor').value.trim(),
+        telefone: document.getElementById('telefone').value.trim(),
+        elogio: document.getElementById('elogio').value.trim(),
+        latitude,
+        longitude,
+        maps_link: $maps.value || null
+      };
+
+      // Matrícula deve existir na base carregada
+      const motoristaValido = motoristas.find(m => String(m.matricula) === data.matricula);
+      if (!motoristaValido) {
+        alert('Matrícula inválida. Verifique o número digitado.');
+        return;
+      }
+
+      if (!data.matricula || !data.autor || !data.telefone || !data.elogio) {
+        alert('Preencha todos os campos obrigatórios.');
+        return;
+      }
+      if (!/^\d{10,11}$/.test(data.telefone)) {
+        alert('Telefone inválido. Use apenas números com DDD (10 ou 11 dígitos).');
+        return;
+      }
+
+      try {
+       const token = Avaliador.getToken();
+
+        const resp = await fetch('/elogio-interno', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-avaliador-token': token
+          },
+          body: JSON.stringify(data)
+        });
+
+
+        const result = await resp.json();
+
+       if (resp.status === 409) {
+        alert(result.mensagem || 'Você já enviou um elogio interno recentemente.');
+        return;
+      }
+
+      if (!resp.ok) {
+        alert(result.mensagem || 'Erro ao enviar elogio.');
+        return;
+      }
+
+      window.location.href = 'obrigado-interno.html';
+
+      } catch (err) {
+        console.error('❌ Erro ao enviar elogio:', err);
+        alert('Erro ao enviar elogio. Tente novamente mais tarde.');
+      }
+    });
+
+    // Solicitar localização assim que a página carregar
+    document.addEventListener('DOMContentLoaded', () => {
+      setSubmitEnabled(false);
+      solicitarLocalizacao();
+    });
+  </script>
+
+<script src="/avaliador-token.js"></script>
+</body>
+</html>

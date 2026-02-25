@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Ocorrência</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <img src="https://d335luupugsy2.cloudfront.net/cms/files/83704/1708422309/$2ghsj3ov03w" alt="Banner Rota de Oportunidade" class="banner">
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h1>⚠ Registrar Ocorrência</h1>
+      <p>Descreva a ocorrência para que possamos analisar:</p>
+      <form id="ocorrenciaForm" class="form">
+        <input type="text" id="nome" name="nome" placeholder="Seu Nome" required>
+        <input type="text" id="tipo_ocorrencia" name="tipo_ocorrencia" placeholder="Tipo de Ocorrência" required>
+
+        <input type="tel" id="telefone" name="telefone" placeholder="Telefone (DDD + número)" 
+        required pattern="^\d{10,11}$" title="Digite apenas números com DDD (10 ou 11 dígitos)">
+        <input type="text" id="carreta" name="carreta" placeholder="Placa da Carreta" required>
+
+        <textarea id="mensagem" name="descricao" placeholder="Descreva a ocorrência" required></textarea>
+
+        <!-- Campos ocultos para localização -->
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="maps_link" name="maps_link">
+
+        <button type="submit" class="btn-orange">Enviar Ocorrência</button>
+      </form>
+      <button class="btn-secondary" onclick="window.location.href='elogionaestrada.html'">⬅ Voltar</button>
+    </div>
+  </main>
+
+  <script>
+    // Captura localização, mas não bloqueia envio se falhar
+    document.addEventListener('DOMContentLoaded', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+          document.getElementById('maps_link').value = `https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+        }, () => {
+          console.warn('⚠ Não foi possível obter localização. Continuando sem GPS.');
+        });
+      }
+    });
+
+    // Envia os dados mesmo sem localização
+    document.getElementById('ocorrenciaForm').addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const data = {
+        nome: document.getElementById('nome').value,
+        carreta: document.getElementById('carreta').value,
+        telefone: document.getElementById('telefone').value, // ✅ Adicionado
+        tipo_ocorrencia: document.getElementById('tipo_ocorrencia').value,
+        descricao: document.getElementById('mensagem').value,
+        latitude: document.getElementById('latitude').value || null,
+        longitude: document.getElementById('longitude').value || null,
+        maps_link: document.getElementById('maps_link').value || null,
+        user_agent: navigator.userAgent
+      };
+
+      try {
+        const response = await fetch('/ocorrencia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        alert(result.mensagem || 'Ocorrência enviada com sucesso!');
+        window.location.href = 'obrigado.html';
+      } catch (error) {
+        alert('Erro ao enviar ocorrência. Verifique a conexão.');
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>

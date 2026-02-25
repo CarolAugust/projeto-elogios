@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elogie um Motorista</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <img src="https://d335luupugsy2.cloudfront.net/cms/files/83704/1708422309/$2ghsj3ov03w" alt="Banner Rota de Oportunidade" class="banner">
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h1>🚛 Elogie um Motorista</h1>
+      <p>Preencha o formulário abaixo para enviar seu elogio:</p>
+
+      <form id="elogioForm" class="form">
+        <input type="text" id="nome" name="nome" placeholder="Seu Nome" required>
+
+        <!-- ✅ Telefone obrigatório -->
+        <input
+          type="tel"
+          id="telefone"
+          name="telefone"
+          placeholder="Telefone (DDD + número)"
+          required
+          pattern="^\d{10,11}$"
+          title="Digite apenas números com DDD (10 ou 11 dígitos)"
+        >
+
+        <input
+          type="text"
+          id="nome_motorista"
+          name="nome_motorista"
+          placeholder="Nome do Motorista"
+          required
+>
+
+
+        <!-- ✅ Carreta com autocomplete -->
+        <input
+          type="text"
+          id="carreta"
+          name="carreta"
+          placeholder="Placa da Carreta"
+          required
+          autocomplete="off"
+          list="listaCarretas"
+          inputmode="text"
+          autocapitalize="characters"
+        >
+        <datalist id="listaCarretas"></datalist>
+
+        <textarea id="mensagem" name="elogio" placeholder="Escreva seu elogio" required></textarea>
+
+        <!-- Campos ocultos -->
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="maps_link" name="maps_link">
+
+        <button type="submit" class="btn-orange">Enviar Elogio</button>
+      </form>
+
+      <button class="btn-secondary" onclick="window.location.href='elogionaestrada.html'">⬅ Voltar</button>
+    </div>
+  </main>
+
+  <script>
+    // ============================
+    // Localização
+    // ============================
+    document.addEventListener('DOMContentLoaded', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+          document.getElementById('maps_link').value =
+            `https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+        }, () => {
+          console.warn('⚠ Não foi possível obter localização.');
+        });
+      }
+    });
+
+    // ============================
+    // Autocomplete Carretas
+    // ============================
+    const inputCarreta = document.getElementById('carreta');
+    const dlCarretas = document.getElementById('listaCarretas');
+
+    let timerCarreta = null;
+
+    function normalizaCarretaFront(valor) {
+      return String(valor || '')
+        .trim()
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '');
+    }
+
+    inputCarreta.addEventListener('input', () => {
+      clearTimeout(timerCarreta);
+
+      timerCarreta = setTimeout(async () => {
+        const q = normalizaCarretaFront(inputCarreta.value);
+
+        // evita bater no servidor com pouca coisa
+        if (q.length < 2) {
+          dlCarretas.innerHTML = '';
+          return;
+        }
+
+        try {
+          const resp = await fetch(`/carretas-ativas?q=${encodeURIComponent(q)}&limit=20`);
+          if (!resp.ok) throw new Error('Falha no endpoint de carretas');
+
+          const data = await resp.json();
+
+          dlCarretas.innerHTML = (data || [])
+            .map(item => `<option value="${item.carreta}"></option>`)
+            .join('');
+        } catch (err) {
+          console.warn('⚠ Autocomplete carreta falhou:', err.message);
+          // não trava o usuário se falhar
+        }
+      }, 200);
+    });
+
+    // Ao sair do campo, normaliza o valor
+    inputCarreta.addEventListener('blur', () => {
+      inputCarreta.value = normalizaCarretaFront(inputCarreta.value);
+    });
+
+    // ============================
+    // Envio do formulário
+    // ============================
+    document.getElementById('elogioForm').addEventListener('submit', async e => {
+      e.preventDefault();
+
+     const data = {
+      nome: document.getElementById('nome').value,
+      nome_motorista: document.getElementById('nome_motorista').value,
+      carreta: normalizaCarretaFront(document.getElementById('carreta').value),
+      telefone: document.getElementById('telefone').value,
+      elogio: document.getElementById('mensagem').value,
+      latitude: document.getElementById('latitude').value || null,
+      longitude: document.getElementById('longitude').value || null,
+      maps_link: document.getElementById('maps_link').value || null,
+      user_agent: navigator.userAgent
+    };
+
+
+      try {
+        const token = Avaliador.getToken();
+
+        const response = await fetch('/elogio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-avaliador-token': token
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        alert(result.mensagem || 'Elogio enviado com sucesso!');
+
+        if (response.ok) {
+          window.location.href = 'obrigado.html';
+        }
+      } catch (error) {
+        alert('Erro ao enviar elogio.');
+        console.error(error);
+      }
+    });
+  </script>
+
+  <script src="/avaliador-token.js"></script>
+</body>
+</html>

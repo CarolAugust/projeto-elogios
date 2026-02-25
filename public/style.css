@@ -1,0 +1,681 @@
+/* -------------------- RESET BÁSICO -------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #dcdad9;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* -------------------- CABEÇALHO (Banner) -------------------- */
+.header {
+  width: 100%;
+  background-color: #dcdad9;
+  overflow: hidden;
+}
+
+.header .banner {
+  width: 100%;
+  height: auto;
+  max-height: 450px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+/* -------------------- CONTEÚDO CENTRAL -------------------- */
+.container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+}
+
+.card {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.card h1 {
+  color: #ff5805;
+  margin-bottom: 10px;
+}
+
+.card p {
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+/* -------------------- BOTÕES PRINCIPAIS -------------------- */
+.btn-orange {
+  background-color: #ff5805;
+  color: white;
+  font-size: 16px;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-orange:hover {
+  background-color: #e04d04;
+}
+
+.btn-orange.small {
+  max-width: 250px;
+  margin: 15px auto;
+  font-size: 14px;
+  padding: 10px;
+}
+
+/* -------------------- RODAPÉ -------------------- */
+.footer {
+  background-color: #545454;
+  color: #fff !important; /* força texto branco */
+  text-align: center;
+  padding: 20px;
+}
+
+.footer p {
+  margin-bottom: 10px;
+  color: #fff !important; /* força branco no texto */
+}
+
+.footer .social-icons a {
+  color: #fff !important; /* força branco nos ícones */
+  font-size: 24px;
+  margin: 0 10px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer .social-icons a:hover {
+  color: #ff5805;
+}
+
+.footer .links {
+  margin: 15px 0;
+}
+
+.footer .links a {
+  color: #fff !important; /* força branco nos links */
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.footer .links a:hover {
+  text-decoration: underline;
+}
+
+/* -------------------- RESPONSIVIDADE -------------------- */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card.highlight {
+    max-width: 90%;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .card.highlight h1 {
+    font-size: 1.4rem;
+    line-height: 1.2;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  .card.highlight .highlight-text {
+    display: block;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    line-height: 1.3;
+    margin-bottom: 15px;
+  }
+
+  .button-group {
+    gap: 10px;
+  }
+
+  .btn-orange {
+    font-size: 1rem;
+    padding: 10px;
+    width: 100%;
+  }
+}
+
+/* -------------------- FORMULÁRIO -------------------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form input, .form textarea {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.btn-secondary {
+  background-color: #ccc;
+  color: #333;
+  font-size: 14px;
+  padding: 10px;
+  border: none;
+  border-radius: 30px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #aaa;
+}
+
+/* -------------------- LOGO NO RODAPÉ -------------------- */
+.footer-logo {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.footer-img {
+  max-width: 120px;
+  height: auto;
+  opacity: 0.9;
+}
+
+/* -------------------- CARD DESTACADO -------------------- */
+.card.highlight {
+  background: linear-gradient(135deg, #ffffff, #f9f9f9);
+  text-align: center;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.card.highlight h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card.highlight .highlight-text {
+  color: #ff5805;
+}
+
+.card.highlight .subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.button-group .btn-orange {
+  width: 90%;
+  margin: 10px auto;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Patch Elogio Interno - UI/UX upgrade */
+.card {
+  max-width: 460px;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.08);
+}
+
+.card h1 {
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.form input[type="text"],
+.form input[type="tel"],
+.form textarea {
+  border: 1px solid #e4e7ec;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 14px;
+  font-size: 1rem;
+  transition: border .15s, box-shadow .15s;
+}
+
+.form input:focus,
+.form textarea:focus {
+  border-color: #ff5805;
+  box-shadow: 0 0 0 3px rgba(255, 88, 5, .15);
+}
+
+.btn-orange {
+  background: linear-gradient(180deg,#ff7a1a 0%,#ff5805 100%);
+  box-shadow: 0 6px 18px rgba(255,88,5,.25);
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.btn-orange:active { transform: translateY(1px); }
+
+.input-with-hint { position: relative; }
+.input-with-hint .hint {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 55%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  color: #9aa3af;
+  font-size: .92rem;
+}
+
+.autocomplete-items {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid #e8eaef;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.autocomplete-items div {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: .98rem;
+}
+.autocomplete-items div:hover { background: #f7f7f9; }
+
+@media (max-width: 420px) {
+  .container { padding: 12px; }
+  .card { padding: 20px 16px; box-shadow: 0 6px 20px rgba(0,0,0,.06); }
+  .input-with-hint .hint { max-width: 62%; font-size: .88rem; }
+  .form input, .form textarea { font-size: 1rem; padding: 13px 12px; }
+  .btn-orange, .btn-secondary { padding: 12px; font-size: 1rem; }
+}
+
+/* =========================
+   Base & Reset leve
+========================= */
+:root {
+  --bg-page: #f6f7fb;
+  --text-strong: #333;
+  --text-muted: #475467;
+  --brand-1: #ff7a1a;
+  --brand-2: #ff5a00;
+  --border: #e4e7ec;
+  --border-2: #e8eaef;
+  --hint: #9aa3af;
+  --blue-700: #f6f7fb; /* mantive, mas não afeta rodapé */
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text-strong);
+  -webkit-text-size-adjust: 100%;
+}
+
+.container {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  line-height: 1.2;
+  font-size: clamp(1.05rem, 4.5vw, 1.35rem);
+}
+
+p {
+  margin: 0 0 14px;
+  font-size: clamp(.92rem, 3.8vw, 1rem);
+  color: var(--text-muted);
+}
+
+input, textarea, select { font-size: 16px; }
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  margin: 10px auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.07);
+  padding: 16px 14px;
+}
+
+.form label {
+  font-weight: 600;
+  color: #344054;
+  margin: 10px 0 6px;
+  display: block;
+  font-size: .95rem;
+}
+
+.form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.btn-secondary {
+  background: #e7eef8;
+  color: var(--blue-700);
+}
+
+.input-with-hint { position: relative; }
+.hint{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 58%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--hint);
+  font-size: .88rem;
+}
+
+.autocomplete-items{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  z-index: 20;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.autocomplete-items div{
+  padding: 10px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: .95rem;
+}
+
+.autocomplete-items div:hover{ background:#f7f7f9; }
+
+@media (max-width: 420px){
+  .card{ max-width: 360px; padding: 14px 12px; }
+  .hint{ max-width: 62%; font-size: .86rem; }
+}
+
+@media (max-width: 360px){
+  .card{ max-width: 100%; border-radius: 12px; }
+  h1{ font-size: 1.05rem; }
+  .form label{ font-size: .92rem; }
+  .btn-orange, .btn-secondary{ font-size: .94rem; }
+}
+
+button { -webkit-tap-highlight-color: transparent; }
+
+/* ===== Ajuste final para rodapé no mobile ===== */
+.footer, 
+.footer * {
+  color: #fff !important;
+}
+
+.footer .btn-secondary {
+  background: transparent !important;
+  color: #fff !important;
+  border: 1px solid #fff;
+}
+
+.footer .btn-secondary:hover {
+  background: rgba(255,255,255,0.1) !important;
+}
+
+/* ===== Fix total de cor no rodapé (mobile/iOS) ===== */
+.footer,
+.footer * {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important; /* iOS/Safari */
+}
+
+/* Links em todos os estados */
+.footer a,
+.footer a:link,
+.footer a:visited,
+.footer a:active,
+.footer a:hover,
+.footer a:focus {
+  color: #fff !important;
+  text-decoration-color: rgba(255,255,255,.65) !important; /* se sublinhar */
+}
+
+/* Telefones, e-mails e links autolinkados no iOS */
+.footer a[href^="tel:"],
+.footer a[href^="mailto:"],
+.footer a[href^="http"],
+.footer a[href^="https"] {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+/* Ícones SVG (fontawesome/heroicons/etc) */
+.footer svg,
+.footer svg * {
+  fill: #fff !important;
+  stroke: #fff !important;
+}
+
+/* Botões secundários no rodapé (se houver) */
+.footer .btn-secondary {
+  background: transparent !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+}
+.footer .btn-secondary:hover {
+  background: rgba(255,255,255,0.12) !important;
+}
+
+/* Evita highlight azul ao tocar (Android/iOS) */
+.footer a, .footer button {
+  -webkit-tap-highlight-color: rgba(255,255,255,0.15);
+}
+
+
+/* === Aproximar o GIF e o rodapé === */
+.container {
+  min-height: auto !important;  /* não força altura total da tela */
+  padding: 8px 12px !important; /* menos espaço em volta */
+}
+
+.header .banner {
+  margin-bottom: 8px !important; /* aproxima o banner/GIF do resto */
+}
+
+/* Ajusta rodapé para ficar mais próximo */
+.footer {
+  margin-top: 0 !important;
+  padding-top: 16px; /* opcional, deixa respiro interno */
+}
+
+/* Remove a caixa do card, mas mantém o conteúdo */
+.card.highlight {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+/* Opcional: centralizar o texto e botões */
+.card.highlight h1,
+.card.highlight p {
+  text-align: center !important;
+}
+
+/* Se quiser diminuir o espaço ao redor */
+.container {
+  padding: 12px !important;
+}
+
+/* Remove a caixa do card, mas mantém conteúdo (desktop e mobile) */
+.card.highlight {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+/* Centraliza texto e botões */
+.card.highlight h1,
+.card.highlight p {
+  text-align: center !important;
+}
+
+/* ===== Ajuste específico para mobile ===== */
+@media (max-width: 480px) {
+  .card.highlight {
+    padding: 8px 12px !important; /* um pouco de respiro nas laterais */
+  }
+
+  .card.highlight h1 {
+    font-size: 1.4rem !important; /* título ajustado para caber bem */
+  }
+
+  .card.highlight p {
+    font-size: 0.9rem !important;
+  }
+
+  .card.highlight .button-group .btn-orange {
+    width: 100% !important; /* botões ocupam toda a largura */
+  }
+}
+
+
+/* ===== Form no estilo do print ===== */
+
+/* limita a largura do formulário e centraliza */
+.form {
+  max-width: 420px;
+  margin: 0 auto !important;
+}
+
+/* cada campo “bloco” centralizado */
+.form .field,
+.form .form-group {
+  margin: 14px 0;
+  text-align: center;
+}
+
+/* rótulo central, um pouco mais forte */
+.form label {
+  display: block;
+  font-weight: 700;
+  color: #2f3a4a;
+  margin: 4px 0 8px;
+  text-align: center !important;
+}
+
+/* inputs mais estreitos e centralizados (como no print) */
+.form input[type="text"],
+.form input[type="number"],
+.form input[type="tel"],
+.form input[type="email"],
+.form textarea,
+.form select {
+  width: 72% !important;          /* ajuste a % se quiser mais largo/estreito */
+  margin: 0 auto !important;      /* centraliza */
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,.03) inset;
+}
+
+/* foco com realce leve */
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  outline: none;
+  border-color: #ff5805;
+  box-shadow: 0 0 0 3px rgba(255,88,5,.12);
+}
+
+/* divisor suave entre os campos (igual ao “tracinho” do print) */
+.form hr,
+.form .divider {
+  height: 6px;
+  border: none;
+  background: #eef2f6;
+  border-radius: 4px;
+  width: 92%;
+  margin: 10px auto;
+}
+
+/* Espaçamento extra entre grupos, caso precise */
+.form .spaced { margin-top: 18px; }
+
+/* Mobile: manter lindo e legível */
+@media (max-width: 480px) {
+  .form { max-width: 360px; }
+  .form input[type="text"],
+  .form input[type="number"],
+  .form input[type="tel"],
+  .form input[type="email"],
+  .form textarea,
+  .form select {
+    width: 86% !important; /* um pouco mais largo no celular */
+    font-size: 1rem;
+  }
+  .form hr, .form .divider { width: 94%; }
+}
+
+
+
+
