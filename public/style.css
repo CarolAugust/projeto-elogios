@@ -676,6 +676,150 @@ button { -webkit-tap-highlight-color: transparent; }
   .form hr, .form .divider { width: 94%; }
 }
 
+/* =========================
+   DESIGN UPGRADE (safe)
+   Cole no FINAL do style.css
+========================= */
 
+:root{
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --shadow: 0 10px 30px rgba(15, 23, 42, .08);
+  --brand: #ff5805;
+  --brand2: #ff7a1a;
+  --radius: 16px;
+}
+
+body{
+  background: radial-gradient(900px 600px at 50% -10%, rgba(255, 88, 5, .10), transparent 55%),
+              var(--bg);
+  color: var(--text);
+}
+
+/* Mantém layout existente, só melhora “respiro” */
+.container{
+  padding: 18px 12px !important;
+}
+
+/* Card mais moderno e consistente */
+.card{
+  background: var(--card);
+  border: 1px solid rgba(229,231,235,.9);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 18px;
+  max-width: 520px;
+}
+
+/* Título e texto */
+.card h1{
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.25rem, 4.2vw, 1.75rem);
+}
+
+.card p{
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Form com espaçamento melhor */
+.form{
+  gap: 12px;
+}
+
+/* Inputs: visual mais premium sem mudar nada no HTML */
+.form input,
+.form textarea,
+.form select{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 14px;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .06s ease;
+}
+
+.form input:hover,
+.form textarea:hover{
+  border-color: #d1d5db;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus{
+  border-color: rgba(255, 88, 5, .85);
+  box-shadow: 0 0 0 4px rgba(255, 88, 5, .14);
+}
+
+/* Botão principal: gradiente mais suave + feedback */
+.btn-orange{
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--brand2), var(--brand));
+  box-shadow: 0 10px 22px rgba(255, 88, 5, .22);
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.btn-orange:hover{
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.btn-orange:active{
+  transform: translateY(0px);
+}
+
+/* Botão desabilitado mais claro */
+.btn-orange:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Hint de matrícula melhor alinhado */
+.input-with-hint .hint{
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* Autocomplete mais bonito */
+.autocomplete-items{
+  border: 1px solid rgba(229,231,235,.9);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, .12);
+  padding: 6px;
+}
+
+.autocomplete-items div{
+  border-radius: 12px;
+}
+
+.autocomplete-items div:hover{
+  background: rgba(255, 88, 5, .08);
+}
+
+/* Status de localização (você já tem no HTML inline; isso só melhora) */
+.loc-status{
+  border-radius: 14px !important;
+  font-weight: 600;
+}
+
+/* Rodapé: mantém como está, só arredonda e dá respiro */
+.footer{
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+/* Mobile: card com mais “encaixe” */
+@media (max-width: 480px){
+  .card{
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
+}
 
 

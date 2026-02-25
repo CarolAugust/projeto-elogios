@@ -570,7 +570,7 @@ app.post('/elogio-interno', async (req, res) => {
 
     // === DEFININDO VALORES PADRÃO QUE FALTAVAM ===
     const tipo = 'Interno'; // Define fixo como Interno
-    const pontos = 1;       // Define quantos pontos vale (ex: 1)
+    const pontos = 2;       // Define quantos pontos vale (ex: 1)
 
     // === SQL ATUALIZADO COM AS NOVAS COLUNAS ===
     const sql = `
