@@ -189,7 +189,7 @@ app.get('/elogio-interno', (req, res) => {
 
 
 /* ======================================================
-   ✅ ELOGIO PÚBLICO (CORRIGIDO)
+   ✅ ELOGIO PÚBLICO 
 ====================================================== */
 app.post('/elogio', async (req, res) => {
   const token = String(req.get('x-avaliador-token') || '').trim().toLowerCase();
@@ -204,8 +204,15 @@ app.post('/elogio', async (req, res) => {
   } = req.body || {};
 
   // Validações básicas
-  if (!nome || !nome_motorista || !carreta || !telefone || !elogio) {
+ // antes: if (!nome || !nome_motorista || !carreta || !telefone || !elogio) ...
+
+  if (!nome || !carreta || !telefone || !elogio) {
     return res.status(400).json({ status: 'erro', mensagem: 'Campos obrigatórios não preenchidos.' });
+  }
+
+  // se não veio nome_motorista, tenta obter pela carreta
+  if (!nome_motorista) {
+    nome_motorista = await getMotoristaPorCarreta(normalizaCarreta(carreta));
   }
 
   try {
@@ -488,11 +495,7 @@ app.get('/carretas-ativas', async (req, res) => {
   }
 });
 
-/* ======================================================
-   ✅ ELOGIO INTERNO COM BLOQUEIO 7 DIAS
-   Regra: (matricula + token) não pode repetir em 30 dias
-   Tabela: elogios_internos (precisa ter token_avaliador)
-====================================================== */
+
 /* ======================================================
    ✅ ELOGIO INTERNO (CORRIGIDO)
    Agora envia 'tipo' e 'pontos' para o banco
